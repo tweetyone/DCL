@@ -32,6 +32,16 @@ import datetime
 from utils.utils import LossRecord, clip_gradient
 from utils.eval_model import eval_turn
 
+# run instructions: 
+# python train_tpu.py --data CUB --epoch 60 --backbone resnet50\
+#                     --tb 16 --tnw 16 --vb 64 --vnw 16 \
+#                     --lr 0.01 --lr_step 12 \
+#                     --cls_lr_ratio 10 --start_epoch 0 \
+#                     --detail training_descibe --size 512 \
+#                     --crop 448 --cls_2 --swap_num 7 7
+
+
+
 
 # parameters setting
 def parse_args():
