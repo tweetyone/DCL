@@ -116,13 +116,9 @@ def train(model,
           ):
 
     step = 0
-
     train_batch_size = args.train_batch
-    train_loss_recorder = LossRecord(train_batch_size)
-
     lr_ratio = args.cls_lr_ratio
     base_lr = args.base_lr
-
         
     optimizer = context.getattr_or('optimizer', lambda: optim.SGD([{'params': base_params},
                          {'params': model.classifier.parameters(), 'lr': lr_ratio*base_lr},
@@ -139,7 +135,6 @@ def train(model,
         model.train(True)
 
         inputs, labels, labels_swap, swap_law, img_names = data[1]
-
         inputs = Variable(inputs)
         labels_1 = Variable(torch.from_numpy(np.array(labels)))
         labels_swap_1 = Variable(torch.from_numpy(np.array(labels_swap)))
@@ -179,11 +174,8 @@ def train(model,
         xm.optimizer_step(optimizer)
         tracker.add(train_batch_size)
 
-
         print('[{}] step: {:-8d} / {:d} loss=ce_loss+swap_loss+law_loss: {:6.4f} = {:6.4f} + {:6.4f} + {:6.4f} '.format(device,step, train_epoch_step, loss.detach().item(), ce_loss.detach().item(), swap_loss.detach().item(), law_loss.detach().item()), flush=True)
-        
-
-
+    
 
 if __name__ == '__main__':
     args = parse_args()
@@ -196,7 +188,6 @@ if __name__ == '__main__':
     transformers = load_data_transformers(args.resize_resolution, args.crop_resolution, args.swap_num)
 
     # initial dataloader
-
     # train_set aug+swap
     train_set = dataset(Config = Config,\
                         anno = Config.train_anno,\
@@ -242,18 +233,15 @@ if __name__ == '__main__':
     print('Set cache dir', flush=True)
     time = datetime.datetime.now()
 
-
     num_cores = 8
     devices = (
         xm.get_xla_supported_devices(
             max_devices=num_cores) if num_cores != 0 else [])
-
     # Scale learning rate to num cores
     base_lr = args.base_lr * max(len(devices), 1)
     # Pass [] as device_ids to run using the PyTorch/CPU engine.
     model_parallel = dp.DataParallel(model, device_ids=devices)
-
-    
+   
     # optimizer prepare
     ignored_params1 = list(map(id, model.classifier.parameters()))
     ignored_params2 = list(map(id, model.classifier_swap.parameters()))
