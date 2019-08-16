@@ -40,7 +40,7 @@ from utils.eval_model import eval_turn
 #                     --detail training_descibe --size 512 \
 #                     --crop 448 --cls_2 --swap_num 7 7
 
-
+# if change the backbone to senet154, will have 'Unable to enqueue' error  
 
 
 # parameters setting
